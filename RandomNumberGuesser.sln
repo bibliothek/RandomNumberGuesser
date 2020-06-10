@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Console", "Console\Console.fsproj", "{1D77B810-3E1D-4856-AC8C-612F9640582D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Game", "Game\Game.fsproj", "{3100F7B9-F186-4095-9986-3394828B5E12}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3100F7B9-F186-4095-9986-3394828B5E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3100F7B9-F186-4095-9986-3394828B5E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3100F7B9-F186-4095-9986-3394828B5E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3100F7B9-F186-4095-9986-3394828B5E12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

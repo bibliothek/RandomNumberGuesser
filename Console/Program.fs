@@ -1,17 +1,17 @@
 ﻿open System
 open Game
 
-let writeGuesses game =
+let print indexedGuess =
+    let i, guess = indexedGuess
+    printfn "%i. Guess: %s" (i + 1) guess
+
+let conclude game =
     printfn "Guesses:"
     game.Guesses
     |> List.rev
-    |> List.indexed 
-    |> List.iter (fun values -> 
-        let i, guess = values
-        let incrementedIndex = i + 1 
-        printfn "%i. Guess: %s" incrementedIndex guess
-    ) 
-    
+    |> List.indexed
+    |> List.iter print
+
 let rec play game =
         printfn ""
         printfn "Make a guess:"
@@ -21,7 +21,7 @@ let rec play game =
         match guessResult with
             | Correct ->
                 printfn "Winner!"
-                writeGuesses updatedGame
+                conclude updatedGame
                 updatedGame
             | TooHigh ->
                 printfn "Too High!"
@@ -32,7 +32,6 @@ let rec play game =
             | InvalidGuess ->
                 printfn "Please type a number!"
                 play updatedGame
-            | _ -> updatedGame
 
 let rec doYouWantToPlayAgain() =
     printfn ""
@@ -46,12 +45,12 @@ let rec doYouWantToPlayAgain() =
 let rec gameLoop (game) =
     play game |> ignore
     if doYouWantToPlayAgain()
-    then 
-        let newGame = Game.newGame()
+    then
+        let newGame = Game.init()
         gameLoop newGame
 
 [<EntryPoint>]
 let main argv =
-    let game = Game.newGame()
+    let game = Game.init()
     gameLoop game |> ignore
     0 // return an integer exit code

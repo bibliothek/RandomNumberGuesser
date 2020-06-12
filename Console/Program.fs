@@ -3,7 +3,7 @@ open Game
 
 let print indexedGuess =
     let i, guess = indexedGuess
-    printfn "%i. Guess: %s" (i + 1) guess
+    printfn "%i. Guess: %A" (i + 1) guess
 
 let conclude game =
     printfn "Guesses:"
@@ -12,11 +12,20 @@ let conclude game =
     |> List.indexed
     |> List.iter print
 
+let rec getGuess() = 
+    printfn ""
+    printfn "Make a guess:"
+    let guessString = Console.ReadLine()
+    match Int32.TryParse guessString with
+    | true, number ->
+        Guess number
+    | false, _ -> 
+        printfn "Please type a number!"
+        getGuess()
+
 let rec play game =
-        printfn ""
-        printfn "Make a guess:"
-        let guessString = Console.ReadLine()
-        let updatedGame = {game with Guesses = guessString :: game.Guesses}
+        let guess = getGuess()
+        let updatedGame = {game with Guesses = guess :: game.Guesses}
         let guessResult = Game.evaluate updatedGame
         match guessResult with
             | Correct ->
@@ -29,9 +38,6 @@ let rec play game =
             | TooLow ->
                 printfn "Too Low!"
                 play updatedGame
-            | InvalidGuess ->
-                printfn "Please type a number!"
-                play updatedGame
 
 let rec doYouWantToPlayAgain() =
     printfn ""
@@ -42,7 +48,7 @@ let rec doYouWantToPlayAgain() =
         | "n" -> false
         | _ -> doYouWantToPlayAgain()
 
-let rec gameLoop (game) =
+let rec gameLoop game =
     play game |> ignore
     if doYouWantToPlayAgain()
     then

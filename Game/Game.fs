@@ -2,25 +2,23 @@
 
 open System
 
+type Guess = Guess of int
+
 type Game =
-    { Guesses: string list
+    { Guesses: Guess list
       NumberToGuess: int }
 
 type GuessResult =
     | Correct
     | TooHigh
     | TooLow
-    | InvalidGuess
 
 module Game =
     let evaluate game =
-        let guess = List.head game.Guesses
-        match Int32.TryParse guess with
-        | true, number ->
-            if number > game.NumberToGuess then TooHigh
-            elif number < game.NumberToGuess then TooLow
-            else Correct
-        | false, _ -> InvalidGuess
+        let (Guess guessAsInt) = List.head game.Guesses
+        if guessAsInt > game.NumberToGuess then TooHigh
+        elif guessAsInt < game.NumberToGuess then TooLow
+        else Correct
 
     let init () =
         { Guesses = List.empty

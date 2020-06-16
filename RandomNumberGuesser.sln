@@ -1,8 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Console", "Console\Console.fsproj", "{1D77B810-3E1D-4856-AC8C-612F9640582D}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Console", "src\Console\Console.fsproj", "{1D77B810-3E1D-4856-AC8C-612F9640582D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Game", "Game\Game.fsproj", "{3100F7B9-F186-4095-9986-3394828B5E12}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Game", "src\Game\Game.fsproj", "{3100F7B9-F186-4095-9986-3394828B5E12}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Client", "src\Client\Client.fsproj", "{73E8E820-C8AA-47CC-BB2B-152CA4D0B855}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Server", "src\Server\Server.fsproj", "{73E8E820-C8AA-47CC-BB2B-152CA4D0B856}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{08CCFCF6-2248-43ED-A6EF-E972A2DA0E6A}"
+	ProjectSection(SolutionItems) = preProject
+		build.fsx = build.fsx
+		package.json = package.json
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+		README.md = README.md
+		webpack.config.js = webpack.config.js
+		yarn.lock = yarn.lock
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,6 +25,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E8E820-C8AA-47CC-BB2B-152CA4D0B856}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D77B810-3E1D-4856-AC8C-612F9640582D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -18,5 +41,11 @@ Global
 		{3100F7B9-F186-4095-9986-3394828B5E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3100F7B9-F186-4095-9986-3394828B5E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3100F7B9-F186-4095-9986-3394828B5E12}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A0AA30E-4CD9-4359-9513-BA68E2E85245}
 	EndGlobalSection
 EndGlobal

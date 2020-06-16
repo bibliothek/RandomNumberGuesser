@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
+    <Compile Include="GameController.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

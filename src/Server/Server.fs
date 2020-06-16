@@ -1,9 +1,10 @@
+module Server
+
 open System.IO
 
 open System
-open FSharp.Control.Tasks.V2
-open Giraffe
 open Saturn
+open GameController
 
 type Counter = {Value: int}
 
@@ -20,11 +21,7 @@ let port =
     |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
 
 let webApp = router {
-    get "/api/init" (fun next ctx -> task {
-        let counter = {Value = 42}
-        return! json counter next ctx
-    })
-
+    forward "/api/game" gameController
 }
 
 let app = application {

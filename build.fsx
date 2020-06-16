@@ -6,8 +6,6 @@
 #r "Facades/netstandard" // https://github.com/ionide/ionide-vscode-fsharp/issues/839#issuecomment-396296095
 #endif
 
-open System
-
 open Fake.Core
 open Fake.DotNet
 open Fake.IO

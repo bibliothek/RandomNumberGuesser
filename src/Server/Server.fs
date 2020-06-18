@@ -1,13 +1,12 @@
 module Server
 
+open System.Collections.Generic
 open System.IO
 
 open System
+open Microsoft.Extensions.DependencyInjection
 open Saturn
-open GameController
-
-type Counter = {Value: int}
-
+open GameRepository.InMemory
 
 let tryGetEnv key =
     match Environment.GetEnvironmentVariable key with
@@ -20,14 +19,21 @@ let port =
     "SERVER_PORT"
     |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
 
-let webApp = router {
-    forward "/api/game" gameController
+
+let serviceConfig (serviceCollection: IServiceCollection) =
+    let inMemory = Dictionary<Guid, PersistedGame>()
+    serviceCollection.AddInMemoryGameStore(inMemory) |> ignore
+    serviceCollection
+
+let apiRouter = router {
+    forward "/api/games" GameController.handlers
 }
 
 let app = application {
     url ("http://0.0.0.0:" + port.ToString() + "/")
-    use_router webApp
     memory_cache
+    use_router apiRouter
+    service_config serviceConfig
     use_static publicPath
     use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
     use_gzip

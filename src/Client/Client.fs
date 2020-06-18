@@ -133,7 +133,8 @@ let guesses model =
     match model.Game with
     | None -> div [] []
     | Some game ->
-        ul [] (game.PastGuesses
+        ol [] (game.PastGuesses
+                |> List.rev
                 |> List.map (fun guess ->
                                 let (Guess guessInt) = guess
                                 li [] [str (string guessInt)]
@@ -156,8 +157,10 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     Input.Value (inputValue model)
                 ]
                 getButton model dispatch
-                h5 [] [str "Previous guesses:"]
-                guesses model
+                Content.content [ Content.Modifiers [ Modifier.TextAlignment(Screen.All, TextAlignment.Left) ]] [
+                    h5 [] [str "Your guesses:"]
+                    guesses model
+                ]
               ]
 
           Footer.footer []

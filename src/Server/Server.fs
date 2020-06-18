@@ -16,7 +16,7 @@ let tryGetEnv key =
 let publicPath = Path.GetFullPath "../Client/public"
 
 let port =
-    "SERVER_PORT"
+    "PORT"
     |> tryGetEnv
     |> Option.map uint16
     |> Option.defaultValue 8085us

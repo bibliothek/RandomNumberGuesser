@@ -12,32 +12,32 @@ let conclude game =
     |> List.indexed
     |> List.iter print
 
-let rec getGuess() = 
+let rec getGuess() =
     printfn ""
     printfn "Make a guess:"
     let guessString = Console.ReadLine()
     match Int32.TryParse guessString with
     | true, number ->
         Guess number
-    | false, _ -> 
+    | false, _ ->
         printfn "Please type a number!"
         getGuess()
 
 let rec play game =
         let guess = getGuess()
-        let updatedGame = {game with Guesses = guess :: game.Guesses}
-        let guessResult = Game.evaluate updatedGame
-        match guessResult with
-            | Correct ->
+        let updatedGame = Game.guess game guess
+        match updatedGame.State with
+            | Finished ->
                 printfn "Winner!"
                 conclude updatedGame
                 updatedGame
-            | TooHigh ->
+            | Guessing TooHigh ->
                 printfn "Too High!"
                 play updatedGame
-            | TooLow ->
+            | Guessing TooLow ->
                 printfn "Too Low!"
                 play updatedGame
+            | _ -> play updatedGame
 
 let rec doYouWantToPlayAgain() =
     printfn ""

@@ -1,0 +1,38 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+    - name: Install tools
+      run: dotnet tool restore
+    - name: Build
+      run: dotnet fake build -t Bundle
+    - name: Login to Heroku
+      if: github.ref == 'refs/heads/master'
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: "heroku container:login"
+    - name: Publish to Heroku
+      if: github.ref == 'refs/heads/master'
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: "heroku container:push -a fast-spire-68498 web"
+    - name: Release to Heroku
+      if: github.ref == 'refs/heads/master'
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: "heroku container:release -a fast-spire-68498 web"

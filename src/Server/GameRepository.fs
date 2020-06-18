@@ -5,26 +5,21 @@ open System.Collections.Generic
 open Microsoft.Extensions.DependencyInjection
 open Game
 
-type PersistedGame =
-    {Game: Game
-     Id: Guid}
+type PersistedGame = { Game: Game; Id: Guid }
 
 type FindGame = Guid -> PersistedGame
 type SaveGame = PersistedGame -> PersistedGame
 type AllGames = unit -> PersistedGame list
 
-let toPersistedGame game id =
-    {Game = game
-     Id = id}
+let toPersistedGame game id = { Game = game; Id = id }
 
-let find (inMemory: Dictionary<Guid, PersistedGame>) (id: Guid) : PersistedGame =
-    inMemory.GetValueOrDefault id
+let find (inMemory: Dictionary<Guid, PersistedGame>) (id: Guid): PersistedGame = inMemory.GetValueOrDefault id
 
 let save (inMemory: Dictionary<Guid, PersistedGame>) (game: PersistedGame) =
     inMemory.[game.Id] <- game
     game
 
-let all (inMemory:Dictionary<Guid, PersistedGame>) : PersistedGame list =
+let all (inMemory: Dictionary<Guid, PersistedGame>): PersistedGame list =
     inMemory.Values |> Seq.cast |> List.ofSeq
 
 type IServiceCollection with
@@ -33,5 +28,3 @@ type IServiceCollection with
         this.AddSingleton<SaveGame>(save dict) |> ignore
         let allPointer = fun () -> all dict
         this.AddSingleton<AllGames>(allPointer) |> ignore
-
-

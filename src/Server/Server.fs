@@ -17,7 +17,9 @@ let publicPath = Path.GetFullPath "../Client/public"
 
 let port =
     "SERVER_PORT"
-    |> tryGetEnv |> Option.map uint16 |> Option.defaultValue 8085us
+    |> tryGetEnv
+    |> Option.map uint16
+    |> Option.defaultValue 8085us
 
 
 let serviceConfig (serviceCollection: IServiceCollection) =
@@ -25,18 +27,18 @@ let serviceConfig (serviceCollection: IServiceCollection) =
     serviceCollection.AddInMemoryGameStore(inMemory) |> ignore
     serviceCollection
 
-let apiRouter = router {
-    forward "/api/games" GameController.handlers
-}
+let apiRouter =
+    router { forward "/api/games" GameController.handlers }
 
-let app = application {
-    url ("http://0.0.0.0:" + port.ToString() + "/")
-    memory_cache
-    use_router apiRouter
-    service_config serviceConfig
-    use_static publicPath
-    use_json_serializer(Thoth.Json.Giraffe.ThothSerializer())
-    use_gzip
-}
+let app =
+    application {
+        url ("http://0.0.0.0:" + port.ToString() + "/")
+        memory_cache
+        use_router apiRouter
+        service_config serviceConfig
+        use_static publicPath
+        use_json_serializer (Thoth.Json.Giraffe.ThothSerializer())
+        use_gzip
+    }
 
 run app

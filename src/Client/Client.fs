@@ -1,108 +1,167 @@
 module Client
 
+open System
 open Elmish
 open Elmish.React
+open Fable.Core
 open Fable.React
 open Fable.React.Props
-open Fetch.Types
-open Thoth.Fetch
+open Game
 open Fulma
-open Thoth.Json
+open Thoth
+open Thoth.Fetch
 
-// The model holds data that you want to keep track of while the application is running
-// in this case, we are keeping track of a counter
-// we mark it as optional, because initially it will not be available from the client
-// the initial value will be requested from server
+type Counter = { Value: int }
 
-type Counter = {Value: int}
+type Model = {
+    Game: ClientGame option
+    GuessInput: int option
+    Loading: bool
+}
 
-type Model = { Counter: Counter option }
-
-// The Msg type defines what events/actions can occur while the application is running
-// the state of the application changes *only* in reaction to these events
 type Msg =
-    | Increment
-    | Decrement
-    | InitialCountLoaded of Counter
+    | UpdateGuess of int
+    | SubmitGuess
+    | GuessResult of ClientGame
+    | NewGameStarted of ClientGame
+    | StartNewGame
 
-let initialCounter () = Fetch.fetchAs<unit, Counter> "/api/init"
 
-// defines the initial state and initial command (= side-effect) of the application
-let init () : Model * Cmd<Msg> =
-    let initialModel = { Counter = None }
-    let loadCountCmd =
-        Cmd.OfPromise.perform initialCounter () InitialCountLoaded
-    initialModel, loadCountCmd
+let newGame (): JS.Promise<ClientGame> =
+    promise { return! Fetch.post "/api/games/" }
 
-// The update function computes the next state of the application based on the current state and the incoming events/messages
-// It can also run side-effects (encoded as commands) like calling the server via Http.
-// these commands in turn, can dispatch messages to which the update function will react.
-let update (msg : Msg) (currentModel : Model) : Model * Cmd<Msg> =
-    match currentModel.Counter, msg with
-    | Some counter, Increment ->
-        let nextModel = { currentModel with Counter = Some { Value = counter.Value + 1 } }
+let makeGuess (id: Guid) (guessRequest: GuessRequest): JS.Promise<ClientGame> =
+    promise { return! Fetch.post ((sprintf "/api/games/%A/guess" id), guessRequest)}
+
+let init (): Model * Cmd<Msg> =
+    let initialModel = { Game = None; GuessInput = None; Loading = true }
+    let initGameCommand =
+        Cmd.OfPromise.perform newGame () NewGameStarted
+    initialModel, initGameCommand
+
+let guess currentModel game guessInput =
+    let guessRequest = {Guess = guessInput}
+    let promise = fun () -> makeGuess game.Id guessRequest
+    let makeGuessCmd = Cmd.OfPromise.perform promise () GuessResult
+    {currentModel with Loading = true}, makeGuessCmd
+
+
+let update (msg: Msg) (currentModel: Model): Model * Cmd<Msg> =
+    match currentModel.Game, msg with
+    | Some game, SubmitGuess ->
+        match currentModel.GuessInput with
+        | Some guessInput ->
+            guess currentModel game guessInput
+        | None -> currentModel, Cmd.none
+    | _, GuessResult result ->
+        {currentModel with Game = Some result; Loading = false}, Cmd.none
+    | _, UpdateGuess guess -> {currentModel with GuessInput = Some guess}, Cmd.none
+    | _, NewGameStarted game ->
+        let nextModel = { Game = Some game; GuessInput = None; Loading = false }
         nextModel, Cmd.none
-    | Some counter, Decrement ->
-        let nextModel = { currentModel with Counter = Some { Value = counter.Value - 1 } }
-        nextModel, Cmd.none
-    | _, InitialCountLoaded initialCount->
-        let nextModel = { Counter = Some initialCount }
-        nextModel, Cmd.none
+    | _, StartNewGame -> init ()
     | _ -> currentModel, Cmd.none
 
 
 let safeComponents =
     let components =
-        span [ ]
-           [ a [ Href "https://github.com/SAFE-Stack/SAFE-template" ]
-               [ str "SAFE  "
-                 str Version.template ]
-             str ", "
-             a [ Href "https://saturnframework.github.io" ] [ str "Saturn" ]
-             str ", "
-             a [ Href "http://fable.io" ] [ str "Fable" ]
-             str ", "
-             a [ Href "https://elmish.github.io" ] [ str "Elmish" ]
-             str ", "
-             a [ Href "https://fulma.github.io/Fulma" ] [ str "Fulma" ]
+        span []
+            [ a [ Href "https://github.com/SAFE-Stack/SAFE-template" ] [ str "SAFE  "; str Version.template ]
+              str ", "
+              a [ Href "https://saturnframework.github.io" ] [ str "Saturn" ]
+              str ", "
+              a [ Href "http://fable.io" ] [ str "Fable" ]
+              str ", "
+              a [ Href "https://elmish.github.io" ] [ str "Elmish" ]
+              str ", "
+              a [ Href "https://fulma.github.io/Fulma" ] [ str "Fulma" ] ]
 
-           ]
-
-    span [ ]
+    span []
         [ str "Version "
-          strong [ ] [ str Version.app ]
+          strong [] [ str Version.app ]
           str " powered by: "
           components ]
 
-let show = function
-    | { Counter = Some counter } -> string counter.Value
-    | { Counter = None   } -> "Loading..."
+let show =
+    function
+    | { Game = None } | { Loading = true } -> "Loading..."
+    | { Game = Some game } ->
+        match game.State with
+        | Started -> "Make a guess!"
+        | Guessing TooHigh -> "The last guess was too high. Try again!"
+        | Guessing TooLow -> "The last guess was too low. Try again!"
+        | Finished -> "You did it!"
+        | _ -> game.State |> string
 
 let button txt onClick =
     Button.button
         [ Button.IsFullWidth
           Button.Color IsPrimary
-          Button.OnClick onClick ]
-        [ str txt ]
+          Button.OnClick onClick ] [ str txt ]
 
-let view (model : Model) (dispatch : Msg -> unit) =
-    div [ ClassName "height-100"]
+let textOrLoading text model =
+    if model.Loading then "Loading" else text
+
+let newGameButton model dispatch : ReactElement =
+    Button.button [
+        Button.OnClick (fun _ -> dispatch  StartNewGame)
+        Button.Disabled model.Loading
+        Button.CustomClass "is-primary is-fullwidth"
+    ] [str (textOrLoading "New Game" model)]
+
+let guessButton (model: Model) dispatch : ReactElement =
+    Button.button [
+        Button.OnClick (fun _ -> dispatch SubmitGuess)
+        Button.Disabled (model.GuessInput.IsNone || model.Loading)
+        Button.CustomClass "is-primary is-fullwidth"
+    ] [str (textOrLoading "Guess" model)]
+
+let getButton model dispatch =
+    match model.Game with
+    | Some game ->
+        match game.State with
+        | Started | Guessing _ -> guessButton model dispatch
+        | Finished -> newGameButton model dispatch
+    | None -> newGameButton model dispatch
+
+let inputValue model =
+    match model.GuessInput with
+    | None -> ""
+    | Some i -> string i
+
+let guesses model =
+    match model.Game with
+    | None -> div [] []
+    | Some game ->
+        ul [] (game.PastGuesses
+                |> List.map (fun guess ->
+                                let (Guess guessInt) = guess
+                                li [] [str (string guessInt)]
+                            ))
+
+let view (model: Model) (dispatch: Msg -> unit) =
+    div [ ClassName "height-100" ]
         [ Navbar.navbar [ Navbar.Color IsPrimary ]
-            [ Navbar.Item.div [ ]
-                [ Heading.h2 [ ]
-                    [ str "matha is ?" ] ] ]
+              [ Navbar.Item.div [] [ Heading.h2 [] [ str "Random Number Guesser" ] ] ]
 
-          Container.container [ ]
-              [ Content.content [ Content.Modifiers [
-                  Modifier.TextAlignment (Screen.All, TextAlignment.Centered)
-              ] ]
-                    [ Heading.h3 [] [ str ("Press buttons to manipulate counter: " + show model) ] ]
-                Columns.columns []
-                    [ Column.column [] [ button "-" (fun _ -> dispatch Decrement) ]
-                      Column.column [] [ button "+" (fun _ -> dispatch Increment) ] ] ]
+          Container.container []
+              [ Content.content [ Content.Modifiers [ Modifier.TextAlignment(Screen.All, TextAlignment.Centered) ] ]
+                    [ Heading.h3 [] [ str "Guess the number between 1 and 100"]
+                      Heading.h4 [] [show model |> str]
+                    ]
+                Input.number [
+                    Input.Placeholder "1-100"
+                    Input.Id "number-input"
+                    Input.OnChange (fun e -> e.Value |> int |> UpdateGuess |> dispatch )
+                    Input.Value (inputValue model)
+                ]
+                getButton model dispatch
+                h5 [] [str "Previous guesses:"]
+                guesses model
+              ]
 
-          Footer.footer [ ]
-                [ Content.content [ Content.Modifiers [ Modifier.TextAlignment (Screen.All, TextAlignment.Centered) ] ]
+          Footer.footer []
+              [ Content.content [ Content.Modifiers [ Modifier.TextAlignment(Screen.All, TextAlignment.Centered) ] ]
                     [ safeComponents ] ] ]
 
 #if DEBUG

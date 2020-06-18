@@ -14,11 +14,19 @@ type GameState =
     | Guessing of GuessResult
     | Finished
 
+type ClientGame =
+    { Id: Guid
+      PastGuesses: Guess list
+      State: GameState }
+
 type Game =
     { Guesses: Guess list
       NumberToGuess: int
       State: GameState }
 
+
+[<CLIMutable>]
+type GuessRequest = { Guess: int }
 
 module Game =
     let private evaluate game =

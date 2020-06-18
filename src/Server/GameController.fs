@@ -7,14 +7,6 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open GameRepository.InMemory
 
-type GameResponse =
-    { Id: Guid
-      PastGuesses: Guess list
-      State: GameState }
-
-[<CLIMutable>]
-type GuessRequest = { Guess: int }
-
 let toResponse (game: PersistedGame) =
     { Id = game.Id
       PastGuesses = game.Game.Guesses

@@ -12,11 +12,12 @@ type Msg =
     | NewGameStarted of ClientGame
     | StartNewGame
 
-let init (): Model * Cmd<Msg> =
+let init firstTime: Model * Cmd<Msg> =
     let initialModel =
         { Game = None
           GuessInput = None
-          Loading = true }
+          Loading = true
+          Initialization = firstTime}
 
     let initGameCommand =
         Cmd.OfPromise.perform newGame () NewGameStarted
@@ -49,7 +50,8 @@ let update (msg: Msg) (currentModel: Model): Model * Cmd<Msg> =
     | _, NewGameStarted game ->
         { Game = Some game
           GuessInput = None
-          Loading = false },
+          Loading = false
+          Initialization = false},
         Cmd.none
-    | _, StartNewGame -> init ()
+    | _, StartNewGame -> init false
     | _ -> currentModel, Cmd.none

@@ -67,7 +67,6 @@ let numberInput model dispatch =
         | false, _ -> UpdateGuess None
     Input.number [
         Input.Placeholder "1-100"
-        Input.Id "number-input"
         Input.Value (inputValue model)
         Input.OnChange (parseInput >> dispatch)
     ]

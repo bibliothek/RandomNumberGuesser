@@ -5,4 +5,5 @@ open Game
 type Model =
     { Game: ClientGame option
       GuessInput: int option
-      Loading: bool }
+      Loading: bool
+      Initialization: bool }

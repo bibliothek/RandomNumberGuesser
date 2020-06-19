@@ -19,7 +19,7 @@
       <Compile Include="View\Content.fs" />
       <Compile Include="View\Footer.fs" />
       <Compile Include="View\View.fs" />
-      <Compile Include="Client.fs" />
+      <Compile Include="App.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

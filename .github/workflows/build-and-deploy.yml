@@ -30,9 +30,9 @@ jobs:
       if: github.ref == 'refs/heads/master'
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      run: "heroku container:push -a fast-spire-68498 web"
+      run: "heroku container:push -a randomnumberguesser web"
     - name: Release to Heroku
       if: github.ref == 'refs/heads/master'
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      run: "heroku container:release -a fast-spire-68498 web"
+      run: "heroku container:release -a randomnumberguesser web"

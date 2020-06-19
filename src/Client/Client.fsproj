@@ -11,8 +11,15 @@
     <None Include="index.html" />
     <None Include="paket.references" />
     <None Include="style.scss" />
-    <Compile Include="Version.fs" />
-    <Compile Include="Client.fs" />
+      <Compile Include="Model.fs" />
+      <Compile Include="Version.fs" />
+      <Compile Include="BackendCalls.fs" />
+      <Compile Include="Update.fs" />
+      <Compile Include="View\Navbar.fs" />
+      <Compile Include="View\Content.fs" />
+      <Compile Include="View\Footer.fs" />
+      <Compile Include="View\View.fs" />
+      <Compile Include="Client.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
